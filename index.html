@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <!-- ...existing head... -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>猎奇回战官网</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <!-- Import Map -->
+  <script type="importmap">
+  {
+    "imports": {
+      "mitt": "https://esm.sh/mitt@3.0.1"
+    }
+  }
+  </script>
+</head>
+<body>
+  <!-- ...existing content... -->
+  <main class="cover">
+    <img src="lqhz.jpeg" alt="猎奇回战官网封面" class="cover-image">
+    <!-- Content area where comics render -->
+    <section id="reader" aria-live="polite">
+      <!-- 初始为空，选择目录后加载 -->
+    </section>
+  </main>
+
+  <!-- Bottom-left Control Button -->
+  <button id="catalogBtn" class="catalog-btn" aria-haspopup="dialog" aria-controls="catalogModal" aria-label="打开目录">C</button>
+
+  <!-- Catalog Modal -->
+  <div id="catalogModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="catalogTitle" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h2 id="catalogTitle">猎奇回战目录</h2>
+        <button class="close-btn" data-close aria-label="关闭">×</button>
+      </header>
+      <div class="modal-body">
+        <nav class="catalog-grid" id="catalogList" aria-label="章节列表">
+          <!-- P1 - P43 -->
+          <!-- 将由 JS 填充 -->
+        </nav>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+  <!-- ...existing content... -->
+</body>
+</html>
