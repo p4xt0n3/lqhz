@@ -30,6 +30,31 @@ const catalogBtn = document.getElementById('catalogBtn');
 const catalogModal = document.getElementById('catalogModal');
 const catalogList = document.getElementById('catalogList');
 
+let currentChapter = null;
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+function updateNavButtons() {
+  if (!currentChapter) {
+    prevBtn.disabled = true; nextBtn.disabled = true;
+    return;
+  }
+  const num = Number(currentChapter.slice(1));
+  prevBtn.disabled = num <= 1;
+  nextBtn.disabled = num >= 43;
+}
+
+prevBtn.addEventListener('click', () => {
+  if (!currentChapter) return;
+  const num = Number(currentChapter.slice(1));
+  if (num > 1) bus.emit('select', `P${num - 1}`);
+});
+nextBtn.addEventListener('click', () => {
+  if (!currentChapter) return;
+  const num = Number(currentChapter.slice(1));
+  if (num < 43) bus.emit('select', `P${num + 1}`);
+});
+
 /* Build catalog items P1 - P43 */
 for (let i = 1; i <= 43; i++) {
   const id = `P${i}`;
@@ -64,6 +89,8 @@ catalogModal.addEventListener('click', (e) => {
 
 /* Render chapter */
 bus.on('select', (chapterId) => {
+  currentChapter = chapterId;
+  updateNavButtons();
   renderStatus(`正在加载 ${chapterId}…`);
   const count = chapterPages[chapterId];
   if (!count) {
