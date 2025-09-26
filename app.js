@@ -20,7 +20,7 @@ const chapterPages = {
   P26: 9, P27: 9, P28: 9, P29: 10, P30: 9,
   P31: 8, P32: 8, P33: 8, P34: 10, P35: 9,
   P36: 9, P37: 9, P38: 9, P39: 10, P40: 10,
-  P41: 9, P42: 10, P43: 9
+  P41: 9, P42: 10, P43: 9, P44: 13
 };
 
 const bus = mitt();
@@ -41,7 +41,7 @@ function updateNavButtons() {
   }
   const num = Number(currentChapter.slice(1));
   prevBtn.disabled = num <= 1;
-  nextBtn.disabled = num >= 43;
+  nextBtn.disabled = num >= 44;
 }
 
 prevBtn.addEventListener('click', () => {
@@ -52,11 +52,11 @@ prevBtn.addEventListener('click', () => {
 nextBtn.addEventListener('click', () => {
   if (!currentChapter) return;
   const num = Number(currentChapter.slice(1));
-  if (num < 43) bus.emit('select', `P${num + 1}`);
+  if (num < 44) bus.emit('select', `P${num + 1}`);
 });
 
-/* Build catalog items P1 - P43 */
-for (let i = 1; i <= 43; i++) {
+/* Build catalog items P1 - P44 */
+for (let i = 1; i <= 44; i++) {
   const id = `P${i}`;
   const item = document.createElement('button');
   item.className = 'catalog-item';
