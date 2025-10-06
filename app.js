@@ -20,8 +20,11 @@ const chapterPages = {
   P26: 9, P27: 9, P28: 9, P29: 10, P30: 9,
   P31: 8, P32: 8, P33: 8, P34: 10, P35: 9,
   P36: 9, P37: 9, P38: 9, P39: 10, P40: 10,
-  P41: 9, P42: 10, P43: 9, P44: 13, P45: 10, P46: 10, P47: 9, P48: 10, P49: 9
+  P41: 9, P42: 10, P43: 9, P44: 13, P45: 10, P46: 10, P47: 9, P48: 10, P49: 9,
+  P50: 10, P51: 7, P52: 9
 };
+
+const TOTAL_CHAPTERS = 52;
 
 const bus = mitt();
 
@@ -41,7 +44,7 @@ function updateNavButtons() {
   }
   const num = Number(currentChapter.slice(1));
   prevBtn.disabled = num <= 1;
-  nextBtn.disabled = num >= 49;
+  nextBtn.disabled = num >= TOTAL_CHAPTERS;
 }
 
 prevBtn.addEventListener('click', () => {
@@ -52,11 +55,11 @@ prevBtn.addEventListener('click', () => {
 nextBtn.addEventListener('click', () => {
   if (!currentChapter) return;
   const num = Number(currentChapter.slice(1));
-  if (num < 49) bus.emit('select', `P${num + 1}`);
+  if (num < TOTAL_CHAPTERS) bus.emit('select', `P${num + 1}`);
 });
 
-/* Build catalog items P1 - P49 */
-for (let i = 1; i <= 49; i++) {
+/* Build catalog items P1 - P52 */
+for (let i = 1; i <= TOTAL_CHAPTERS; i++) {
   const id = `P${i}`;
   const item = document.createElement('button');
   item.className = 'catalog-item';
