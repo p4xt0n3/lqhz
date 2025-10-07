@@ -21,10 +21,10 @@ const chapterPages = {
   P31: 8, P32: 8, P33: 8, P34: 10, P35: 9,
   P36: 9, P37: 9, P38: 9, P39: 10, P40: 10,
   P41: 9, P42: 10, P43: 9, P44: 13, P45: 10, P46: 10, P47: 9, P48: 10, P49: 9,
-  P50: 10, P51: 7, P52: 9
+  P50: 10, P51: 7, P52: 9, P53: 9
 };
 
-const TOTAL_CHAPTERS = 52;
+const TOTAL_CHAPTERS = 53;
 
 const bus = mitt();
 
