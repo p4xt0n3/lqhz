@@ -1,5 +1,7 @@
 // ...existing code...
 import mitt from 'mitt';
+// add load module
+import { showLoading, updateLoading, hideLoading } from './load.js';
 
 /**
  * 配置：图片所在根目录
@@ -137,7 +139,14 @@ bus.on('select', (chapterId) => {
     renderStatus('该章节未上线');
     return;
   }
+
+  // show loading overlay
+  showLoading({ title: `加载 ${chapterId}`, total: count });
+
   const frag = document.createDocumentFragment();
+  let loaded = 0;
+  let errored = 0;
+
   for (let i = 1; i <= count; i++) {
     const img = document.createElement('img');
     img.className = 'page-img';
@@ -145,9 +154,31 @@ bus.on('select', (chapterId) => {
     const lower = chapterId.toLowerCase(); // p1, p2, ...
     img.alt = `${chapterId} 第 ${i} 页`;
     img.src = `${IMAGE_ROOT}/${lower}-${i}.jpeg`;
-    img.onerror = () => {
-      img.replaceWith(statusNode(`图片加载失败：${chapterId}/${lower}-${i}.jpeg`));
-    };
+
+    // handle load / error to update progress
+    img.addEventListener('load', () => {
+      loaded++;
+      updateLoading({ loaded, total: count });
+      if (loaded + errored === count) {
+        // all settled
+        hideLoading();
+      }
+    });
+    img.addEventListener('error', () => {
+      errored++;
+      updateLoading({ loaded, total: count });
+      // replace with status node placeholder so layout remains
+      const note = statusNode(`图片加载失败：${chapterId}/${lower}-${i}.jpeg`);
+      note.className = 'reader-status';
+      // replace image with placeholder after it's attached
+      setTimeout(() => {
+        if (img.parentNode) img.replaceWith(note);
+      }, 0);
+      if (loaded + errored === count) {
+        hideLoading();
+      }
+    });
+
     frag.appendChild(img);
   }
   reader.innerHTML = '';

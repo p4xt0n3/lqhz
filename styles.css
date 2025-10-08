@@ -165,6 +165,51 @@ body {
   font-size: 14px;
 }
 
+/* Loading overlay */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+.loading-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.loading-panel {
+  width: min(640px, 92vw);
+  padding: 18px;
+  background: rgba(255,255,255,0.95);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+  border-radius: 8px;
+  text-align: center;
+}
+.loading-title {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.progress-track {
+  width: 100%;
+  height: 12px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg,#111,#444);
+  transition: width 140ms linear;
+}
+
 .nav-controls {
   position: fixed;
   right: 16px;
