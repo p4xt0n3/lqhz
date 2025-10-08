@@ -35,7 +35,25 @@
   </main>
 
   <!-- Bottom-left Control Button -->
+  <button id="contactBtn" class="contact-btn" aria-haspopup="dialog" aria-controls="contactModal" aria-label="联系信息">i</button>
   <button id="catalogBtn" class="catalog-btn" aria-haspopup="dialog" aria-controls="catalogModal" aria-label="打开目录">C</button>
+
+  <!-- Contact Modal -->
+  <div id="contactModal" class="contact-modal modal" role="dialog" aria-modal="true" aria-labelledby="contactTitle" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel small">
+      <header class="modal-header">
+        <h3 id="contactTitle">我知道你在看</h3>
+        <button class="close-btn" data-close aria-label="关闭">×</button>
+      </header>
+      <div class="modal-body contact-body">
+        <p>猎奇回战QQ群：384441662</p>
+        <p>猎奇回战作者QQ：1736731564</p>
+        <p class="qr-label">猎奇回战群二维码</p>
+        <img src="lqhzqr.png" alt="猎奇回战群二维码" class="qr-img">
+      </div>
+    </div>
+  </div>
 
   <!-- Catalog Modal -->
   <div id="catalogModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="catalogTitle" hidden>
@@ -46,6 +64,14 @@
         <button class="close-btn" data-close aria-label="关闭">×</button>
       </header>
       <div class="modal-body">
+        <div id="catalogPages" class="catalog-pages" role="tablist" aria-label="目录页码">
+          <!-- Page buttons will be rendered here -->
+          <button type="button" class="page-btn" data-page="1" aria-pressed="true">第1页</button>
+          <button type="button" class="page-btn" data-page="2">第1+1页</button>
+          <button type="button" class="page-btn" data-page="3">第1+2页</button>
+          <button type="button" class="page-btn" data-page="4">第√16页</button>
+          <button type="button" class="page-btn" data-page="5">第√5*√5页</button>
+        </div>
         <nav class="catalog-grid" id="catalogList" aria-label="章节列表">
           <!-- P1 - P43 -->
           <!-- 将由 JS 填充 -->

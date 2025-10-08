@@ -21,10 +21,10 @@ const chapterPages = {
   P31: 8, P32: 8, P33: 8, P34: 10, P35: 9,
   P36: 9, P37: 9, P38: 9, P39: 10, P40: 10,
   P41: 9, P42: 10, P43: 9, P44: 13, P45: 10, P46: 10, P47: 9, P48: 10, P49: 9,
-  P50: 10, P51: 7, P52: 9, P53: 9
+  P50: 10, P51: 7, P52: 9, P53: 9, P54: 9
 };
 
-const TOTAL_CHAPTERS = 53;
+const TOTAL_CHAPTERS = 500; // updated: 5 pages × 100 parts each
 
 const bus = mitt();
 
@@ -32,10 +32,15 @@ const reader = document.getElementById('reader');
 const catalogBtn = document.getElementById('catalogBtn');
 const catalogModal = document.getElementById('catalogModal');
 const catalogList = document.getElementById('catalogList');
+const contactBtn = document.getElementById('contactBtn');
+const contactModal = document.getElementById('contactModal');
+const catalogPages = document.getElementById('catalogPages');
 
 let currentChapter = null;
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
+// track current catalog page (was missing which prevented clicks/initial render)
+let currentCatalogPage = 1;
 
 function updateNavButtons() {
   if (!currentChapter) {
@@ -58,36 +63,68 @@ nextBtn.addEventListener('click', () => {
   if (num < TOTAL_CHAPTERS) bus.emit('select', `P${num + 1}`);
 });
 
-/* Build catalog items P1 - P52 */
-for (let i = 1; i <= TOTAL_CHAPTERS; i++) {
-  const id = `P${i}`;
-  const item = document.createElement('button');
-  item.className = 'catalog-item';
-  item.type = 'button';
-  item.textContent = id;
-  if (!chapterPages[id]) {
-    item.setAttribute('aria-disabled', 'true');
-    item.title = '未上线';
-  } else {
-    item.addEventListener('click', () => {
-      bus.emit('select', id);
-      closeModal();
-    });
+/* replace the previous "Build catalog items P1 - P52" block with paged renderer */
+function renderCatalogPage(page = 1) {
+  catalogList.innerHTML = '';
+  const start = (page - 1) * 100 + 1;
+  const end = Math.min(page * 100, TOTAL_CHAPTERS);
+  for (let i = start; i <= end; i++) {
+    const id = `P${i}`;
+    const item = document.createElement('button');
+    item.className = 'catalog-item';
+    item.type = 'button';
+    item.textContent = id;
+    if (!chapterPages[id]) {
+      item.setAttribute('aria-disabled', 'true');
+      item.title = '等着';
+    } else {
+      item.addEventListener('click', () => {
+        bus.emit('select', id);
+        closeModal();
+      });
+    }
+    catalogList.appendChild(item);
   }
-  catalogList.appendChild(item);
+  // update page button pressed states
+  const btns = catalogPages.querySelectorAll('.page-btn');
+  btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.page === String(page) ? 'true' : 'false'));
 }
+
+catalogPages.addEventListener('click', (e) => {
+  const btn = e.target.closest('.page-btn');
+  if (!btn) return;
+  const p = Number(btn.dataset.page) || 1;
+  currentCatalogPage = p;
+  renderCatalogPage(p);
+});
+
+/* initialize first render */
+renderCatalogPage(currentCatalogPage);
 
 /* Modal controls */
 function openModal() {
   catalogModal.hidden = false;
   // focus first enabled item
-  const first = catalogList.querySelector('.catalog-item[aria-disabled="false"], .catalog-item:not([aria-disabled])');
+  const first = catalogList.querySelector('.catalog-item:not([aria-disabled="true"])');
   if (first) first.focus();
 }
 function closeModal() { catalogModal.hidden = true; }
 catalogBtn.addEventListener('click', openModal);
 catalogModal.addEventListener('click', (e) => {
   if (e.target.matches('[data-close], .modal-backdrop')) closeModal();
+});
+
+/* Contact modal controls */
+function openContact() {
+  contactModal.hidden = false;
+  const close = contactModal.querySelector('[data-close]');
+  // focus close button for accessibility
+  if (close) close.focus();
+}
+function closeContact() { contactModal.hidden = true; }
+contactBtn.addEventListener('click', openContact);
+contactModal.addEventListener('click', (e) => {
+  if (e.target.matches('[data-close], .modal-backdrop')) closeContact();
 });
 
 /* Render chapter */

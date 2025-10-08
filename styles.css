@@ -66,6 +66,24 @@ body {
 .catalog-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,0,0,0.12); }
 .catalog-btn:active { transform: translateY(0); }
 
+/* Contact floating button (above catalog button) */
+.contact-btn {
+  position: fixed;
+  left: 16px;
+  bottom: 74px; /* slightly above catalogBtn */
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--fg);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.08);
+  transition: transform 120ms ease, box-shadow 180ms ease;
+}
+.contact-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,0,0,0.12); }
+
 /* Modal */
 .modal[hidden] { display: none; }
 .modal-backdrop {
@@ -98,6 +116,24 @@ body {
   cursor: pointer;
 }
 .modal-body { padding: 12px; overflow: auto; }
+
+/* Small modal variant for contact */
+.modal-panel.small {
+  width: 320px;
+  max-height: 70vh;
+  padding: 0;
+}
+.contact-body { padding: 12px; text-align: center; }
+.contact-body p { margin: 8px 0; color: var(--fg); }
+.qr-label { margin-top: 6px; font-weight: 600; }
+.qr-img {
+  width: 200px;
+  height: auto;
+  display: block;
+  margin: 10px auto 0;
+  border: 1px solid var(--border);
+  background: #fff;
+}
 
 /* Catalog Grid */
 .catalog-grid {
@@ -151,4 +187,23 @@ body {
   opacity: 0.45;
   cursor: not-allowed;
   transform: none;
+}
+
+.catalog-pages {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0 12px;
+  justify-content: center;
+}
+.page-btn {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.page-btn[aria-pressed="true"] {
+  background: #f0f0f0;
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,0.03);
 }
