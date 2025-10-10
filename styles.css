@@ -84,6 +84,45 @@ body {
 }
 .contact-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,0,0,0.12); }
 
+/* Ciallo button (bottom-right) */
+.ciallo-btn {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  min-width: 160px;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--fg);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+  transition: transform 120ms ease, opacity 150ms ease;
+  z-index: 60;
+}
+.ciallo-btn:active { transform: translateY(1px); }
+
+/* Flying text element */
+.ciallo-fly {
+  position: fixed;
+  top: calc(50% - 18px);
+  right: -10%;
+  white-space: nowrap;
+  font-weight: 800;
+  font-size: 20px;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translateX(0);
+  transition: transform 1600ms cubic-bezier(.2,.9,.2,1), opacity 300ms ease;
+  will-change: transform, opacity;
+  opacity: 1;
+}
+.ciallo-fly.exit {
+  opacity: 0;
+}
+
 /* Modal */
 .modal[hidden] { display: none; }
 .modal-backdrop {

@@ -23,7 +23,7 @@ const chapterPages = {
   P31: 8, P32: 8, P33: 8, P34: 10, P35: 9,
   P36: 9, P37: 9, P38: 9, P39: 10, P40: 10,
   P41: 9, P42: 10, P43: 9, P44: 13, P45: 10, P46: 10, P47: 9, P48: 10, P49: 9,
-  P50: 10, P51: 7, P52: 9, P53: 9, P54: 9, P55: 9
+  P50: 10, P51: 7, P52: 9, P53: 9, P54: 9, P55: 9, P56: 9
 };
 
 const TOTAL_CHAPTERS = 500; // updated: 5 pages × 100 parts each
@@ -43,6 +43,51 @@ const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 // track current catalog page (was missing which prevented clicks/initial render)
 let currentCatalogPage = 1;
+
+// Ciallo feature: flying text + sound
+const cialloBtn = document.getElementById('cialloBtn');
+
+// preload audio element
+const cialloAudio = new Audio('ciallo.mp3');
+cialloAudio.preload = 'auto';
+
+function randColor() {
+  // pick a vivid random color but avoid extremes
+  const h = Math.floor(Math.random() * 360);
+  const s = 75;
+  const l = 55;
+  return `hsl(${h} ${s}% ${l}%)`;
+}
+
+cialloBtn.addEventListener('click', () => {
+  // play sound (attempt)
+  try { cialloAudio.currentTime = 0; cialloAudio.play().catch(()=>{}); } catch(e) {}
+
+  // create flying text
+  const el = document.createElement('div');
+  el.className = 'ciallo-fly';
+  el.textContent = 'Ciallo～(∠・ω< )';
+  el.style.color = randColor();
+
+  // randomized vertical position slightly
+  const vh = Math.max(80, window.innerHeight - 60);
+  const topPx = Math.floor(window.innerHeight * (0.2 + Math.random() * 0.6));
+  el.style.top = `${topPx}px`;
+
+  document.body.appendChild(el);
+
+  // force layout then animate to left off-screen
+  requestAnimationFrame(() => {
+    const travel = - (window.innerWidth + el.offsetWidth);
+    el.style.transform = `translateX(${travel}px)`;
+  });
+
+  // clean up after animation
+  setTimeout(() => {
+    el.classList.add('exit');
+    setTimeout(() => { if (el.parentNode) el.remove(); }, 300);
+  }, 1700);
+});
 
 function updateNavButtons() {
   if (!currentChapter) {
