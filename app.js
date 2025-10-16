@@ -1,9 +1,12 @@
 // ...existing code...
 import mitt from 'mitt';
+import JSZip from 'jszip';
 // add load module
 import { showLoading, updateLoading, hideLoading } from './load.js';
 // add info overlay initializer
 import { initInfoOverlay } from './info.js';
+// add count badge
+import { initCount } from './count.js';
 
 /**
  * 配置：图片所在根目录
@@ -49,6 +52,7 @@ let currentCatalogPage = 1;
 
 // Ciallo feature: flying text + sound
 const cialloBtn = document.getElementById('cialloBtn');
+const downloadBtn = document.getElementById('downloadBtn');
 
 // preload audio element
 const cialloAudio = new Audio('ciallo.mp3');
@@ -154,6 +158,9 @@ renderCatalogPage(currentCatalogPage);
 // initialize info overlay logic (works with dynamic catalog items)
 initInfoOverlay(catalogList);
 
+// initialize count badge
+initCount(chapterPages);
+
 /* Modal controls */
 function openModal() {
   catalogModal.hidden = false;
@@ -178,6 +185,71 @@ function closeContact() { contactModal.hidden = true; }
 contactBtn.addEventListener('click', openContact);
 contactModal.addEventListener('click', (e) => {
   if (e.target.matches('[data-close], .modal-backdrop')) closeContact();
+});
+
+/* Download all images into zip */
+downloadBtn.addEventListener('click', async () => {
+  // compute total images from chapterPages
+  const entries = Object.entries(chapterPages);
+  const totalImages = entries.reduce((s, [, v]) => s + (Number(v) || 0), 0);
+  if (totalImages === 0) return;
+
+  const zip = new JSZip();
+  showLoading({ title: '打包全部图片', total: totalImages });
+
+  const concurrency = 6;
+  let processed = 0;
+  const queue = [];
+
+  for (const [chapterId, pages] of entries) {
+    for (let i = 1; i <= pages; i++) {
+      queue.push({ chapterId, idx: i });
+    }
+  }
+
+  async function worker() {
+    while (queue.length) {
+      const item = queue.shift();
+      const lower = item.chapterId.toLowerCase();
+      const path = `${IMAGE_ROOT}/${lower}-${item.idx}.jpeg`;
+      try {
+        const res = await fetch(path);
+        if (!res.ok) throw new Error('bad');
+        const buf = await res.arrayBuffer();
+        // add under chapter folder
+        zip.file(`${item.chapterId}/${lower}-${item.idx}.jpeg`, buf);
+      } catch (err) {
+        // create a small text placeholder to indicate missing image
+        zip.file(`${item.chapterId}/ERROR-${lower}-${item.idx}.txt`, `failed to fetch ${path}`);
+      } finally {
+        processed++;
+        updateLoading({ loaded: processed, total: totalImages });
+      }
+    }
+  }
+
+  // start workers
+  const workers = Array.from({ length: concurrency }, () => worker());
+  await Promise.all(workers);
+
+  // generate zip
+  const blob = await zip.generateAsync({ type: 'blob' }, (meta) => {
+    // optional: update progress from zip generation (meta.percent)
+    // Map percent to loaded approximation
+    // keep the bar at least showing completion
+    updateLoading({ loaded: totalImages, total: totalImages });
+  });
+
+  // trigger download
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'lqhz_comics.zip';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  hideLoading();
 });
 
 /* Render chapter */

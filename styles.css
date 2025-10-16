@@ -104,6 +104,27 @@ body {
 }
 .ciallo-btn:active { transform: translateY(1px); }
 
+/* Download button (top-left square) */
+.download-btn {
+  position: fixed;
+  left: 16px;
+  top: 12px;
+  width: 44px;
+  height: 44px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--fg);
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  z-index: 90;
+  transition: transform 120ms ease, box-shadow 160ms ease;
+}
+.download-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(0,0,0,0.10); }
+
 /* Flying text element */
 .ciallo-fly {
   position: fixed;
@@ -312,4 +333,20 @@ body {
 .page-btn[aria-pressed="true"] {
   background: #f0f0f0;
   box-shadow: inset 0 0 0 2px rgba(0,0,0,0.03);
+}
+
+.count-badge {
+  position: fixed;
+  right: 16px;
+  top: 12px;
+  background: #fff;
+  color: var(--fg);
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.06);
+  z-index: 80;
+  user-select: none;
 }
