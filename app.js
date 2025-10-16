@@ -24,7 +24,7 @@ const chapterPages = {
   P36: 9, P37: 9, P38: 9, P39: 10, P40: 10,
   P41: 9, P42: 10, P43: 9, P44: 13, P45: 10, P46: 10, P47: 9, P48: 10, P49: 9,
   P50: 10, P51: 7, P52: 9, P53: 9, P54: 9, P55: 9, P56: 9, P57: 10, P58: 10, P59: 14,
-  P60: 9, P61: 9, P62: 10
+  P60: 8, P61: 9, P62: 9, P63: 10
 };
 
 const TOTAL_CHAPTERS = 500; // updated: 5 pages × 100 parts each
