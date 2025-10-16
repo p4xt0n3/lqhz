@@ -2,6 +2,8 @@
 import mitt from 'mitt';
 // add load module
 import { showLoading, updateLoading, hideLoading } from './load.js';
+// add info overlay initializer
+import { initInfoOverlay } from './info.js';
 
 /**
  * 配置：图片所在根目录
@@ -148,6 +150,9 @@ catalogPages.addEventListener('click', (e) => {
 
 /* initialize first render */
 renderCatalogPage(currentCatalogPage);
+
+// initialize info overlay logic (works with dynamic catalog items)
+initInfoOverlay(catalogList);
 
 /* Modal controls */
 function openModal() {
