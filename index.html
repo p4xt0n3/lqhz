@@ -41,6 +41,8 @@
 
   <!-- Download button (top-left) -->
   <button id="downloadBtn" class="download-btn" aria-label="下载全部">⬇</button>
+  <!-- Download specific parts button (small square under download) -->
+  <button id="downloadPartBtn" class="download-part-btn" aria-label="下载指定章节">▣</button>
 
   <!-- Ciallo button (bottom-right) -->
   <button id="cialloBtn" class="ciallo-btn" aria-label="Ciallo 按钮">Ciallo～(∠・ω&lt; )</button>
@@ -83,6 +85,26 @@
           <!-- P1 - P43 -->
           <!-- 将由 JS 填充 -->
         </nav>
+      </div>
+    </div>
+  </div>
+
+  <!-- Part-download Modal -->
+  <div id="partDownloadModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="partDownloadTitle" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel">
+      <header class="modal-header">
+        <h2 id="partDownloadTitle">选择要下载的章节</h2>
+        <button class="close-btn" data-close aria-label="关闭">×</button>
+      </header>
+      <div class="modal-body">
+        <div id="partDownloadList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;max-height:56vh;overflow:auto;padding:8px 0;">
+          <!-- checkboxes rendered by JS -->
+        </div>
+        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
+          <button id="partDownloadCancel" class="close-btn" data-close>取消</button>
+          <button id="partDownloadDo" class="page-btn" aria-pressed="false">下载所选</button>
+        </div>
       </div>
     </div>
   </div>

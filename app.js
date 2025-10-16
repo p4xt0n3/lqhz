@@ -7,6 +7,8 @@ import { showLoading, updateLoading, hideLoading } from './load.js';
 import { initInfoOverlay } from './info.js';
 // add count badge
 import { initCount } from './count.js';
+// add keybinds initializer
+import { initKeybinds } from './keybinds.js';
 
 /**
  * 配置：图片所在根目录
@@ -53,6 +55,11 @@ let currentCatalogPage = 1;
 // Ciallo feature: flying text + sound
 const cialloBtn = document.getElementById('cialloBtn');
 const downloadBtn = document.getElementById('downloadBtn');
+const downloadPartBtn = document.getElementById('downloadPartBtn');
+const partDownloadModal = document.getElementById('partDownloadModal');
+const partDownloadList = document.getElementById('partDownloadList');
+const partDownloadDo = document.getElementById('partDownloadDo');
+const partDownloadCancel = document.getElementById('partDownloadCancel');
 
 // preload audio element
 const cialloAudio = new Audio('ciallo.mp3');
@@ -187,8 +194,17 @@ contactModal.addEventListener('click', (e) => {
   if (e.target.matches('[data-close], .modal-backdrop')) closeContact();
 });
 
+// add abort flag shared for downloads
+let downloadAbortRequested = false;
+
+// listen for cancel from loading overlay
+document.addEventListener('loading:cancel', () => {
+  downloadAbortRequested = true;
+});
+
 /* Download all images into zip */
 downloadBtn.addEventListener('click', async () => {
+  downloadAbortRequested = false; // reset
   // compute total images from chapterPages
   const entries = Object.entries(chapterPages);
   const totalImages = entries.reduce((s, [, v]) => s + (Number(v) || 0), 0);
@@ -209,7 +225,9 @@ downloadBtn.addEventListener('click', async () => {
 
   async function worker() {
     while (queue.length) {
+      if (downloadAbortRequested) break;
       const item = queue.shift();
+      if (!item) break;
       const lower = item.chapterId.toLowerCase();
       const path = `${IMAGE_ROOT}/${lower}-${item.idx}.jpeg`;
       try {
@@ -232,6 +250,12 @@ downloadBtn.addEventListener('click', async () => {
   const workers = Array.from({ length: concurrency }, () => worker());
   await Promise.all(workers);
 
+  if (downloadAbortRequested) {
+    hideLoading();
+    // cancelled — silently stop (no alert)
+    return;
+  }
+
   // generate zip
   const blob = await zip.generateAsync({ type: 'blob' }, (meta) => {
     // optional: update progress from zip generation (meta.percent)
@@ -250,6 +274,78 @@ downloadBtn.addEventListener('click', async () => {
   a.remove();
   URL.revokeObjectURL(url);
   hideLoading();
+});
+
+/* Download selected parts into zip */
+partDownloadDo.addEventListener('click', async () => {
+  downloadAbortRequested = false; // reset
+  const checks = Array.from(partDownloadList.querySelectorAll('input[type="checkbox"]:checked'));
+  if (checks.length === 0) {
+    alert('请先选择至少一个章节');
+    return;
+  }
+  // build queue of images
+  const selections = checks.map(cb => ({ id: cb.dataset.part, pages: Number(cb.dataset.pages) }));
+  const totalImages = selections.reduce((s, sel) => s + sel.pages, 0);
+  if (totalImages === 0) return;
+
+  const zip = new JSZip();
+  showLoading({ title: '打包所选章节', total: totalImages });
+
+  const queue = [];
+  for (const sel of selections) {
+    for (let i = 1; i <= sel.pages; i++) {
+      queue.push({ chapterId: sel.id, idx: i });
+    }
+  }
+
+  let processed = 0;
+  const concurrency = 5;
+  async function worker() {
+    while (queue.length) {
+      if (downloadAbortRequested) break;
+      const item = queue.shift();
+      if (!item) break;
+      const lower = item.chapterId.toLowerCase();
+      const path = `${IMAGE_ROOT}/${lower}-${item.idx}.jpeg`;
+      try {
+        const res = await fetch(path);
+        if (!res.ok) throw new Error('bad');
+        const buf = await res.arrayBuffer();
+        zip.file(`${item.chapterId}/${lower}-${item.idx}.jpeg`, buf);
+      } catch (err) {
+        zip.file(`${item.chapterId}/ERROR-${lower}-${item.idx}.txt`, `failed to fetch ${path}`);
+      } finally {
+        processed++;
+        updateLoading({ loaded: processed, total: totalImages });
+      }
+    }
+  }
+
+  const workers = Array.from({ length: concurrency }, () => worker());
+  await Promise.all(workers);
+
+  if (downloadAbortRequested) {
+    hideLoading();
+    // cancelled — silently stop and close modal
+    closePartDownload();
+    return;
+  }
+
+  const blob = await zip.generateAsync({ type: 'blob' }, (meta) => {
+    updateLoading({ loaded: totalImages, total: totalImages });
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'lqhz_selected.zip';
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+  hideLoading();
+  closePartDownload();
 });
 
 /* Render chapter */
@@ -323,4 +419,31 @@ function statusNode(text) {
 }
 
 // 初始状态提示
-renderStatus('点击左下角 "C" 打开目录');
+renderStatus('点击左下角 "C" 或者点击键盘 "C" 键打开目录');
+
+// add listener to open part-download modal and populate list
+function openPartDownload() {
+  // build list
+  partDownloadList.innerHTML = '';
+  const entries = Object.entries(chapterPages);
+  entries.forEach(([id, pages]) => {
+    const box = document.createElement('label');
+    box.style = 'display:flex;align-items:center;gap:8px;padding:6px;border:1px solid var(--border);border-radius:6px;background:#fff;';
+    box.innerHTML = `<input type="checkbox" data-part="${id}" data-pages="${pages}" ${pages ? '' : 'disabled'}> <div style="flex:1;font-weight:600;">${id}</div> <div style="font-size:12px;color:var(--muted)">${pages ? pages + '页' : '未上线'}</div>`;
+    partDownloadList.appendChild(box);
+  });
+  partDownloadModal.hidden = false;
+}
+
+// wire existing button to the new function
+downloadPartBtn.addEventListener('click', openPartDownload);
+
+// initialize keyboard shortcuts
+initKeybinds({ openCatalog: openModal });
+
+// close/hide handlers for part download modal
+function closePartDownload() { partDownloadModal.hidden = true; }
+partDownloadModal.addEventListener('click', (e) => {
+  if (e.target.matches('[data-close], .modal-backdrop')) closePartDownload();
+});
+partDownloadCancel.addEventListener('click', closePartDownload);

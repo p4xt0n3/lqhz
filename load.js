@@ -11,6 +11,9 @@ export function showLoading({ title = '加载中', total = 1 } = {}) {
           <div class="progress-bar" id="__loading_bar__" style="width:0%"></div>
         </div>
         <div style="margin-top:8px;font-size:13px;color:#666" id="__loading_text__">0 / ${total}</div>
+        <div style="margin-top:12px;text-align:right;">
+          <button id="__loading_cancel__" class="close-btn" aria-label="取消下载">取消</button>
+        </div>
       </div>
     `;
     document.body.appendChild(overlay);
@@ -22,6 +25,15 @@ export function showLoading({ title = '加载中', total = 1 } = {}) {
   // store totals on element for updates
   overlay.dataset.total = String(total);
   overlay.classList.add('visible');
+
+  // attach cancel handler (emit custom event on document)
+  const cancelBtn = overlay.querySelector('#__loading_cancel__');
+  if (cancelBtn && !cancelBtn.dataset.attached) {
+    cancelBtn.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('loading:cancel', { detail: {} }));
+    });
+    cancelBtn.dataset.attached = '1';
+  }
 }
 
 export function updateLoading({ loaded = 0, total = null } = {}) {
