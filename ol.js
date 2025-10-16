@@ -2,7 +2,7 @@
 // Polls a JSON 'database' hosted on GitHub (raw file URL) to display current online count.
 // Configure DB_URL to point to a GitHub raw JSON file that looks like: { "online": 12 }
 
-const DB_URL = 'https://raw.githubusercontent.com/<owner>/<repo>/main/online.json';
+const DB_URL = 'https://raw.githubusercontent.com/p4xt0n3/lqhz/main/online.json';
 // polling interval (ms)
 const POLL_INTERVAL = 10_000;
 
