@@ -378,3 +378,32 @@ body {
   z-index: 80;
   user-select: none;
 }
+
+.donate-btn {
+  position: fixed;
+  right: 16px;
+  top: 56px; /* under the count-badge which is at top:12 */
+  min-width: 84px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--fg);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.06);
+  z-index: 85;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+.donate-btn:hover { transform: translateY(-2px); }
+
+/* donate modal medium size */
+.modal-panel.medium {
+  width: min(520px, 92vw);
+  max-height: 80vh;
+  padding: 0;
+}
+.donate-modal .modal-backdrop {
+  cursor: pointer;
+}

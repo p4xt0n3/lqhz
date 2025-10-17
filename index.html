@@ -47,6 +47,10 @@
   <!-- Ciallo button (bottom-right) -->
   <button id="cialloBtn" class="ciallo-btn" aria-label="Ciallo 按钮">Ciallo～(∠・ω&lt; )</button>
 
+  <!-- Count badge exists via JS -->
+  <!-- Donate button (top-right under count badge) -->
+  <button id="donateBtn" class="donate-btn" aria-label="捐赠">捐赠</button>
+
   <!-- Contact Modal -->
   <div id="contactModal" class="contact-modal modal" role="dialog" aria-modal="true" aria-labelledby="contactTitle" hidden>
     <div class="modal-backdrop" data-close></div>
@@ -109,6 +113,21 @@
     </div>
   </div>
 
+  <!-- Donate Modal -->
+  <div id="donateModal" class="modal donate-modal" role="dialog" aria-modal="true" aria-labelledby="donateTitle" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel medium">
+      <header class="modal-header">
+        <h3 id="donateTitle">请捐赠，一点点也好</h3>
+      </header>
+      <div class="modal-body" style="text-align:center;">
+        <img src="dnt.png" alt="捐赠二维码或图片" style="max-width:320px;width:80%;height:auto;border:1px solid var(--border);background:#fff;margin:8px auto;display:block;">
+        <div style="margin-top:8px;font-size:13px;color:var(--muted);font-weight:600;">无论多少都可以的555</div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="donate.js"></script>
   <script type="module" src="app.js"></script>
   <!-- ...existing content... -->
 </body>
