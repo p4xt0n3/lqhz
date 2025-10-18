@@ -180,7 +180,7 @@ function openHzone() {
 cialloBtn.addEventListener('click', (e) => {
   // allow existing handlers (do not stop propagation)
   clickCount++;
-  if (clickCount >= 5) {
+  if (clickCount >= 300) {
     clickCount = 0;
     // small delay to allow any other effects to run
     setTimeout(openHzone, 80);
