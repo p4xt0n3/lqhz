@@ -2,6 +2,8 @@
 // Opens a full-page "好看的" gallery after 5 clicks on the Ciallo button.
 // Images h1.png ... h100.png shown side-by-side, initially blurred; click toggles blur.
 
+import { requestPassword } from './password.js';
+
 const cialloBtn = document.getElementById('cialloBtn');
 if (!cialloBtn) throw new Error('Ciallo button not found');
 
@@ -166,11 +168,17 @@ function openHzone() {
   }
   document.body.appendChild(confirm);
   // handlers
-  confirm.querySelector('.confirm-yes').addEventListener('click', () => {
+  confirm.querySelector('.confirm-yes').addEventListener('click', async () => {
+    // show password prompt before opening the hzone
+    const proceed = await requestPassword({ promptText: '请输入密码', correct: '30-07-2025' });
     if (confirm.parentNode) confirm.parentNode.removeChild(confirm);
-    const modal = buildModal();
-    document.body.appendChild(modal);
-    modal.scrollTop = 0;
+    if (proceed) {
+      const modal = buildModal();
+      document.body.appendChild(modal);
+      modal.scrollTop = 0;
+    } else {
+      // do nothing if incorrect / cancelled
+    }
   }, { once: true });
   confirm.querySelector('.confirm-no').addEventListener('click', () => {
     if (confirm.parentNode) confirm.parentNode.removeChild(confirm);
@@ -180,7 +188,7 @@ function openHzone() {
 cialloBtn.addEventListener('click', (e) => {
   // allow existing handlers (do not stop propagation)
   clickCount++;
-  if (clickCount >= 300) {
+  if (clickCount >= 5) {
     clickCount = 0;
     // small delay to allow any other effects to run
     setTimeout(openHzone, 80);
