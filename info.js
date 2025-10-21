@@ -68,7 +68,9 @@ export function initInfoOverlay(container) {
     P62: { name: '早八🕗', date: '15/10/25' },
     P63: { name: '俩⭕神', date: '16/10/25' },
     P64: { name: '润', date: '16/10/25' }, 
-    P65: { name: '惨', date: '17/10/25' }
+    P65: { name: '惨', date: '17/10/25' },
+    P66: { name: '⭕错人', date: '19/10/25' },
+    P67: { name: '打④你⑧了', date: '20/10/25' }
   };
 
   let timer = null;
