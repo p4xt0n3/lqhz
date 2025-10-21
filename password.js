@@ -87,7 +87,7 @@ export function requestPassword({ promptText = '请输入密码', correct = '30-
       const ov = document.createElement('div');
       ov.id = '__pwd_fail_shock__';
       ov.style = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;z-index:22000';
-      ov.innerHTML = `<img src="daipai.png" alt="代拍" style="max-width:90%;max-height:90%;display:block">`;
+      ov.innerHTML = `<img src="daipai.png" alt="代拍" style="max-width:170%;max-height:170%;display:block">`;
       document.body.appendChild(ov);
       // audio: loop dadongbei.mp3 at max permitted volume
       try {
