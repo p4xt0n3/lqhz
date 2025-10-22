@@ -135,12 +135,12 @@ function initMusicWidget() {
   });
 
   // keyboard left/right for track change
-  window.addEventListener('keydown', (e) => {
-    const tag = (e.target && e.target.tagName) || '';
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return;
-    if (e.key === 'ArrowLeft') prev();
-    if (e.key === 'ArrowRight') next();
-  });
+  // window.addEventListener('keydown', (e) => {
+  //   const tag = (e.target && e.target.tagName) || '';
+  //   if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return;
+  //   if (e.key === 'ArrowLeft') prev();
+  //   if (e.key === 'ArrowRight') next();
+  // });
 
   // opacity when pointer away -> dim
   let hover = false;
