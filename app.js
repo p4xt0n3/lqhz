@@ -9,6 +9,7 @@ import { initInfoOverlay } from './info.js';
 import { initCount } from './count.js';
 // add keybinds initializer
 import { initKeybinds } from './keybinds.js';
+import { initPartNav } from './functions.js';
 
 /**
  * 配置：图片所在根目录
@@ -441,7 +442,24 @@ downloadPartBtn.addEventListener('click', openPartDownload);
 // initialize keyboard shortcuts
 initKeybinds({ openCatalog: openModal });
 
-// close/hide handlers for part download modal
+// initialize arrow navigation (left/right/up/down)
+initPartNav({
+  getCurrent: () => currentChapter,
+  emitSelect: (id) => bus.emit('select', id),
+  totalChapters: TOTAL_CHAPTERS,
+  // provide latest available chapter derived from chapterPages (highest Pn that exists)
+  getLatest: () => {
+    const keys = Object.keys(chapterPages || {});
+    if (!keys.length) return null;
+    // extract numeric parts and find max where pages > 0
+    const nums = keys.map(k => Number(k.replace(/^P/, ''))).filter(n => Number.isFinite(n));
+    if (!nums.length) return null;
+    const max = Math.max(...nums);
+    return `P${max}`;
+  }
+});
+
+/* close/hide handlers for part download modal */
 function closePartDownload() { partDownloadModal.hidden = true; }
 partDownloadModal.addEventListener('click', (e) => {
   if (e.target.matches('[data-close], .modal-backdrop')) closePartDownload();
