@@ -4,7 +4,9 @@
 const tracks = [
   { file: 'istheresomeoneelse.mp3', title: 'Is there someone else? — The Weeknd' },
   { file: 'tekit.mp3', title: 'Tek it — Cafuné' },
-  { file: 'iloveyouso.mp3', title: 'I Love You So — The Walters' }
+  { file: 'iloveyouso.mp3', title: 'I Love You So — The Walters' },
+  { file: '大风吹.mp3', title: '大风吹 — 草东没有派对' },
+  { file: '缸.mp3', title: '缸 — 草东没有派对' }
 ];
 
 function createElem(html) {
