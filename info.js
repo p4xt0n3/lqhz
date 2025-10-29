@@ -77,6 +77,7 @@ export function initInfoOverlay(container) {
     P71: { name: 'TA4大手子', date: '24/10/25'},
     P72: { name: '阴得没边', date: '27/10/25'},
     P73: { name: '意味?', date: '28/10/25'}
+  };
 
   let timer = null;
   let overlay = null;
