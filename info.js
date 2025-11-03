@@ -76,7 +76,11 @@ export function initInfoOverlay(container) {
     P70: { name: '男娘兔', date: '23/10/25'},
     P71: { name: 'TA4大手子', date: '24/10/25'},
     P72: { name: '阴得没边', date: '27/10/25'},
-    P73: { name: '意味?', date: '28/10/25'}
+    P73: { name: '意味?', date: '28/10/25'},
+    P74: { name: '没完的⭕', date: '29/10/25'},
+    P75: { name: '团灭', date: '30/10/25'},
+    P76: { name: '表白成功', date: '31/10/25'},
+    P77: { name: '捆绑play', date: '02/11/25'}
   };
 
   let timer = null;
