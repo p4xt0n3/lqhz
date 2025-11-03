@@ -18,7 +18,7 @@ import { initPartNav } from './functions.js';
 const IMAGE_ROOT = '.';
 
 /**
- * 章节页数映射（已扩展到 P1-Pidk）
+ * 章节页数映射（已扩展到 P1-Pn+1）
  * 其余章节标记为未上线
  */
 const chapterPages = {
@@ -33,7 +33,7 @@ const chapterPages = {
   P41: 9, P42: 10, P43: 9, P44: 13, P45: 10, P46: 10, P47: 9, P48: 10, P49: 9,
   P50: 10, P51: 7, P52: 9, P53: 9, P54: 9, P55: 9, P56: 9, P57: 10, P58: 10, P59: 14,
   P60: 8, P61: 9, P62: 9, P63: 10, P64: 9, P65: 10, P66: 10, P67: 10, P68: 11,
-  P69: 10, P70: 11, P71: 10, P72: 9, P73: 9
+  P69: 10, P70: 11, P71: 10, P72: 9, P73: 9, P74: 10, P75: 8, P76: 10, P77: 10
 };
 
 const TOTAL_CHAPTERS = 500; // updated: 5 pages × 100 parts each
@@ -54,7 +54,7 @@ const nextBtn = document.getElementById('nextBtn');
 // track current catalog page (was missing which prevented clicks/initial render)
 let currentCatalogPage = 1;
 
-// Ciallo feature: flying text + sound
+// 柚子厨鹅心心
 const cialloBtn = document.getElementById('cialloBtn');
 const downloadBtn = document.getElementById('downloadBtn');
 const downloadPartBtn = document.getElementById('downloadPartBtn');
