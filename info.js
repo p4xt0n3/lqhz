@@ -81,7 +81,8 @@ export function initInfoOverlay(container) {
     P75: { name: '团灭', date: '30/10/25'},
     P76: { name: '表白成功', date: '31/10/25'},
     P77: { name: '捆绑play', date: '02/11/25'},
-    P78: { name: '聚众因怕', date: '03/11/25'}
+    P78: { name: '聚众因怕', date: '03/11/25'},
+    P79: { name: '又被制裁', date: '04/11/25'}
   };
 
   let timer = null;
