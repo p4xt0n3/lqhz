@@ -95,7 +95,8 @@ export function initInfoOverlay(container) {
     P89: { name: '暴打', date: '17/11/25'},
     P90: { name: '主母', date: '18/11/25'},
     P91: { name: '2G', date: '19/11/25'},
-    P92: { name: '主宇宙&平行宇宙', date: '20/11/25'}
+    P92: { name: '主宇宙&平行宇宙', date: '20/11/25'},
+    P93: { name: '过往', date: '21/11/25'}
   };
 
   let timer = null;
