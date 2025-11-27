@@ -118,7 +118,8 @@ export function initInfoOverlay(container) {
 
   function showForTarget(target) {
     if (!target) return;
-    const id = target.textContent && target.textContent.trim();
+    // prefer dataset.part (global ID like "P101"), fall back to visible text
+    const id = (target.dataset && target.dataset.part) ? target.dataset.part : (target.textContent && target.textContent.trim());
     const data = meta[id];
     if (!data) return;
     const ol = ensureOverlay();
