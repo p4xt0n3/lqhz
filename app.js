@@ -138,13 +138,17 @@ function renderCatalogPage(page = 1) {
     const item = document.createElement('button');
     item.className = 'catalog-item';
     item.type = 'button';
-    item.textContent = id;
+    // show per-season local numbering (P1..P100) while keeping global id in dataset
+    const localNum = i - start + 1;
+    item.textContent = `P${localNum}`;
+    item.dataset.part = id; // store global id for actions and info overlay
     if (!chapterPages[id]) {
       item.setAttribute('aria-disabled', 'true');
       item.title = '等着';
     } else {
       item.addEventListener('click', () => {
-        bus.emit('select', id);
+        // use global id stored in dataset when selecting
+        bus.emit('select', item.dataset.part);
         closeModal();
       });
     }
