@@ -1,148 +1,483 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
-  <!-- ...existing head... -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>猎奇回战官网</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <!-- Import Map -->
-  <script type="importmap">
-  {
-    "imports": {
-      "mitt": "https://esm.sh/mitt@3.0.1",
-      "jszip": "https://esm.sh/jszip@3.10.1"
-    }
-  }
-  </script>
-  <link rel="icon" href="qsnbl.png" type="image/png">
-</head>
-<body>
-  <!-- ...existing content... -->
-  <main class="cover">
-    <!-- Carousel cover: three slides (will roll automatically and via buttons) -->
-    <div id="coverCarousel" class="carousel" aria-roledescription="carousel" aria-label="封面轮播">
-      <div class="carousel-track" id="carouselTrack" style="transform:translateX(0%)">
-        <div class="carousel-slide"><img src="lqhz.jpeg" alt="封面 1"></div>
-        <div class="carousel-slide"><img src="lqhzs2.jpeg" alt="封面 2"></div>
-        <div class="carousel-slide"><img src="qtsy.jpeg" alt="封面 3"></div>
-      </div>
-      <button class="carousel-btn left" id="carouselPrev" aria-label="上一封面">‹</button>
-      <button class="carousel-btn right" id="carouselNext" aria-label="下一封面">›</button>
-    </div>
+/* ...existing styles... */
+:root {
+  --bg: #fff;
+  --fg: #111;
+  --muted: #666;
+  --border: #ddd;
+}
 
-    <!-- Content area where comics render -->
-    <section id="reader" aria-live="polite">
-      <!-- 初始为空，选择目录后加载 -->
-    </section>
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Noto Sans', system-ui, -apple-system, Segoe UI, Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+}
 
-    <!-- Navigation controls: previous / next chapter -->
-    <div class="nav-controls" aria-hidden="false">
-      <button id="prevBtn" class="nav-btn" aria-label="上一章" title="上一章">←</button>
-      <button id="nextBtn" class="nav-btn" aria-label="下一章" title="下一章">→</button>
-    </div>
-  </main>
+/* Carousel cover */
+.carousel {
+  position: relative;
+  width: min(640px, 92%); /* reduced max width for better balance */
+  max-width: 92vw;
+  max-height: 48vh; /* limit height so it doesn't dominate the viewport */
+  height: auto;
+  margin: 18px auto;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #000;
+}
+.carousel-track {
+  display: flex;
+  width: 300%;
+  transition: transform 420ms cubic-bezier(.2,.9,.2,1);
+  will-change: transform;
+}
+.carousel-slide {
+  flex: 0 0 100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: #000;
+}
+.carousel-slide img {
+  max-width: 100%;
+  max-height: 44vh; /* slightly smaller than container to keep padding */
+  width: auto;
+  height: auto;
+  display:block;
+  object-fit:contain;
+}
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.92);
+  color: var(--fg);
+  font-size: 22px;
+  line-height: 1;
+  display:grid;
+  place-items:center;
+  cursor: pointer;
+  z-index: 40;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.carousel-btn.left { left: 8px; }
+.carousel-btn.right { right: 8px; }
+.carousel-btn:active { transform: translateY(-50%) scale(0.98); }
+@media (max-width:520px) {
+  .carousel { width: 94%; margin: 12px auto; }
+  .carousel-btn { width:40px;height:40px;font-size:20px; }
+}
 
-  <!-- Bottom-left Control Button -->
-  <button id="contactBtn" class="contact-btn" aria-haspopup="dialog" aria-controls="contactModal" aria-label="联系信息">i</button>
-  <button id="catalogBtn" class="catalog-btn" aria-haspopup="dialog" aria-controls="catalogModal" aria-label="打开目录">C</button>
+/* Reader */
+#reader {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 24px 16px 80px;
+}
+.page-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 0 16px;
+  border: 1px solid var(--border);
+  background: #f7f7f7;
+}
 
-  <!-- Download button (top-left) -->
-  <button id="downloadBtn" class="download-btn" aria-label="下载全部">⬇</button>
-  <!-- Download specific parts button (small square under download) -->
-  <button id="downloadPartBtn" class="download-part-btn" aria-label="下载指定章节">▣</button>
+/* Catalog Button */
+.catalog-btn {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--fg);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.08);
+  transition: transform 120ms ease, box-shadow 180ms ease;
+}
+.catalog-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,0,0,0.12); }
+.catalog-btn:active { transform: translateY(0); }
 
-  <!-- Ciallo button (bottom-right) -->
-  <button id="cialloBtn" class="ciallo-btn" aria-label="Ciallo 按钮">Ciallo～(∠・ω&lt; )</button>
+/* Contact floating button (above catalog button) */
+.contact-btn {
+  position: fixed;
+  left: 16px;
+  bottom: 74px; /* slightly above catalogBtn */
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--fg);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.08);
+  transition: transform 120ms ease, box-shadow 180ms ease;
+}
+.contact-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0,0,0,0.12); }
 
-  <!-- Count badge exists via JS -->
-  <!-- Donate button (top-right under count badge) -->
-  <button id="donateBtn" class="donate-btn" aria-label="捐赠">捐赠</button>
+/* Ciallo button (bottom-right) */
+.ciallo-btn {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  min-width: 160px;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--fg);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+  transition: transform 120ms ease, opacity 150ms ease;
+  z-index: 60;
+}
+.ciallo-btn:active { transform: translateY(1px); }
 
-  <!-- Contact Modal -->
-  <div id="contactModal" class="contact-modal modal" role="dialog" aria-modal="true" aria-labelledby="contactTitle" hidden>
-    <div class="modal-backdrop" data-close></div>
-    <div class="modal-panel small">
-      <header class="modal-header">
-        <h3 id="contactTitle">我知道你在看</h3>
-        <button class="close-btn" data-close aria-label="关闭">×</button>
-      </header>
-      <div class="modal-body contact-body">
-        <p>猎奇回战QQ群：384441662</p>
-        <p>猎奇回战作者QQ：1736731564</p>
-        <p class="qr-label">猎奇回战群二维码</p>
-        <img src="lqhzqr.png" alt="猎奇回战群二维码" class="qr-img">
-      </div>
-    </div>
-  </div>
+/* Download button (top-left square) */
+.download-btn {
+  position: fixed;
+  left: 16px;
+  top: 12px;
+  width: 44px;
+  height: 44px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--fg);
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  z-index: 90;
+  transition: transform 120ms ease, box-shadow 160ms ease;
+}
+.download-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(0,0,0,0.10); }
 
-  <!-- Catalog Modal -->
-  <div id="catalogModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="catalogTitle" hidden>
-    <div class="modal-backdrop" data-close></div>
-    <div class="modal-panel">
-      <header class="modal-header">
-        <h2 id="catalogTitle">猎奇回战目录</h2>
-        <button class="close-btn" data-close aria-label="关闭">×</button>
-      </header>
-      <div class="modal-body">
-        <div id="catalogPages" class="catalog-pages" role="tablist" aria-label="目录页码">
-          <!-- Page buttons will be rendered here -->
-          <button type="button" class="page-btn" data-page="1" aria-pressed="true">第一季</button>
-          <button type="button" class="page-btn" data-page="2">第二季</button>
-          <button type="button" class="page-btn" data-page="3">第三季</button>
-          <button type="button" class="page-btn" data-page="4">第四季</button>
-          <button type="button" class="page-btn" data-page="5">第五季</button>
-        </div>
-        <nav class="catalog-grid" id="catalogList" aria-label="章节列表">
-          <!-- P1 - P43 -->
-          <!-- 将由 JS 填充 -->
-        </nav>
-      </div>
-    </div>
-  </div>
+/* Download part button */
+.download-part-btn {
+  position: fixed;
+  left: 16px;
+  top: 64px; /* under the download-btn (top:12 + 44 + 8) */
+  width: 40px;
+  height: 40px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--fg);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  z-index: 90;
+  transition: transform 120ms ease, box-shadow 160ms ease;
+}
+.download-part-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(0,0,0,0.08); }
 
-  <!-- Part-download Modal -->
-  <div id="partDownloadModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="partDownloadTitle" hidden>
-    <div class="modal-backdrop" data-close></div>
-    <div class="modal-panel">
-      <header class="modal-header">
-        <h2 id="partDownloadTitle">选择要下载的章节</h2>
-        <button class="close-btn" data-close aria-label="关闭">×</button>
-      </header>
-      <div class="modal-body">
-        <div id="partDownloadList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;max-height:56vh;overflow:auto;padding:8px 0;">
-          <!-- checkboxes rendered by JS -->
-        </div>
-        <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:12px;">
-          <button id="partDownloadCancel" class="close-btn" data-close>取消</button>
-          <button id="partDownloadDo" class="page-btn" aria-pressed="false">下载所选</button>
-        </div>
-      </div>
-    </div>
-  </div>
+/* Flying text element */
+.ciallo-fly {
+  position: fixed;
+  top: calc(50% - 18px);
+  right: -10%;
+  white-space: nowrap;
+  font-weight: 800;
+  font-size: 20px;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translateX(0);
+  transition: transform 1600ms cubic-bezier(.2,.9,.2,1), opacity 300ms ease;
+  will-change: transform, opacity;
+  opacity: 1;
+}
+.ciallo-fly.exit {
+  opacity: 0;
+}
 
-  <!-- Donate Modal -->
-  <div id="donateModal" class="modal donate-modal" role="dialog" aria-modal="true" aria-labelledby="donateTitle" hidden>
-    <div class="modal-backdrop" data-close></div>
-    <div class="modal-panel medium">
-      <header class="modal-header">
-        <h3 id="donateTitle">请捐赠，一点点也好</h3>
-      </header>
-      <div class="modal-body" style="text-align:center;">
-        <img src="dnt.png" alt="捐赠二维码或图片" style="max-width:320px;width:80%;height:auto;border:1px solid var(--border);background:#fff;margin:8px auto;display:block;">
-        <div style="margin-top:8px;font-size:13px;color:var(--muted);font-weight:600;">无论多少都可以的555</div>
-      </div>
-    </div>
-  </div>
+/* Info overlay for catalog items */
+.info-overlay {
+  position: fixed;
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.92);
+  transition: opacity 220ms cubic-bezier(.2,.9,.2,1), transform 220ms cubic-bezier(.2,.9,.2,1);
+  z-index: 10000;
+  max-width: 260px;
+  backdrop-filter: blur(4px);
+}
+.info-overlay.visible {
+  opacity: 0.75; /* 75% transparent black background effect already set via rgba */
+  transform: scale(1);
+}
 
-  <script type="module" src="password.js"></script>
-  <script type="module" src="hzone.js"></script>
-  <script type="module" src="music.js"></script>
-  <script type="module" src="donate.js"></script>
-  <script type="module" src="app.js"></script>
-  <!-- ...existing content... -->
-</body>
-</html>
+/* Modal */
+.modal[hidden] { display: none; }
+.modal-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.35);
+}
+.modal-panel {
+  position: fixed;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(720px, 92vw);
+  max-height: 80vh;
+  background: #fff;
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.22);
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.close-btn {
+  border: none;
+  background: #111;
+  color: #fff;
+  width: auto;
+  height: 36px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+  font-weight: 700;
+  transition: transform 120ms ease, box-shadow 140ms ease, opacity 120ms ease;
+}
+.close-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,0.14); opacity: 0.98; }
+.close-btn:active { transform: translateY(0); box-shadow: 0 6px 18px rgba(0,0,0,0.10); }
+.modal-body { padding: 12px; overflow: auto; }
+
+/* Small modal variant for contact */
+.modal-panel.small {
+  width: 320px;
+  max-height: 70vh;
+  padding: 0;
+}
+.contact-body { padding: 12px; text-align: center; }
+.contact-body p { margin: 8px 0; color: var(--fg); }
+.qr-label { margin-top: 6px; font-weight: 600; }
+.qr-img {
+  width: 200px;
+  height: auto;
+  display: block;
+  margin: 10px auto 0;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+/* Catalog Grid */
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 8px;
+}
+.catalog-item {
+  border: 1px solid var(--border);
+  padding: 10px 8px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  background: #fff;
+  transition: background 120ms ease, transform 120ms ease;
+}
+.catalog-item:hover { background: #f5f5f5; transform: translateY(-1px); }
+.catalog-item[aria-disabled="true"] {
+  color: var(--muted);
+  cursor: not-allowed;
+  background: #fafafa;
+}
+
+/* Loading & Status */
+.reader-status {
+  text-align: center;
+  color: var(--muted);
+  padding: 24px 0;
+  font-size: 14px;
+}
+
+/* Loading overlay */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,255,255,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+.loading-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.loading-panel {
+  width: min(640px, 92vw);
+  padding: 18px;
+  background: rgba(255,255,255,0.95);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+  border-radius: 8px;
+  text-align: center;
+}
+.loading-title {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.progress-track {
+  width: 100%;
+  height: 12px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg,#111,#444);
+  transition: width 140ms linear;
+}
+
+.nav-controls {
+  position: fixed;
+  right: 16px;
+  bottom: 80px;
+  display: flex;
+  gap: 8px;
+  z-index: 40;
+}
+.nav-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  font-weight: 700;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+.nav-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.catalog-pages {
+  display: flex;
+  gap: 8px;
+  padding: 8px 0 12px;
+  justify-content: center;
+}
+.page-btn {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.page-btn[aria-pressed="true"] {
+  background: #f0f0f0;
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,0.03);
+}
+
+.count-badge {
+  position: fixed;
+  right: 16px;
+  top: 12px;
+  background: #fff;
+  color: var(--fg);
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.06);
+  z-index: 80;
+  user-select: none;
+}
+
+.donate-btn {
+  position: fixed;
+  right: 16px;
+  top: 96px; /* moved down to avoid covering current part box (was 56px) */
+  min-width: 84px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: #fff;
+  color: var(--fg);
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.06);
+  z-index: 85;
+  transition: transform 120ms ease, opacity 120ms ease;
+}
+.donate-btn:hover { transform: translateY(-2px); }
+
+/* donate modal medium size */
+.modal-panel.medium {
+  width: min(520px, 92vw);
+  max-height: 80vh;
+  padding: 0;
+}
+.donate-modal .modal-backdrop {
+  cursor: pointer;
+}
+
+.music-widget {
+  position: fixed;
+  left: 8px;
+  top: 40%;
+  transform: translateY(-50%);
+  background: #0f1113;
+  color: #fff;
+  border-radius: 10px;
+  padding: 8px;
+  width: 220px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+  z-index: 12000;
+  opacity: 1;
+  transition: opacity 180ms ease, transform 120ms ease;
+  user-select: none;
+  touch-action: none;
+}
+.music-widget.dim { opacity: 0.2; }
+.music-top { display:flex;align-items:center;gap:8px; }
+.music-menu { width:28px;height:28px;border-radius:6px;background:transparent;border:1px solid rgba(255,255,255,0.08);display:grid;place-items:center;cursor:pointer }
+.music-title { flex:1;font-weight:700;font-size:13px; }
+.music-controls { display:flex;align-items:center;gap:8px;margin-top:8px; }
+.music-btn { width:36px;height:36px;border-radius:8px;border:1px solid rgba(255,255,255,0.08);background:transparent;color:#fff;cursor:pointer }
+.music-progress { width:100%;height:8px;background:rgba(255,255,255,0.08);border-radius:8px;overflow:hidden;margin-top:8px;cursor:pointer }
+.music-bar { height:100%;width:0%;background:linear-gradient(90deg,#fff,#ddd); }
+.music-list-panel { position: absolute; left:calc(100% + 8px); top:0;background:#0b0c0d;border:1px solid rgba(255,255,255,0.06);color:#fff;padding:8px;border-radius:8px;min-width:200px;box-shadow:0 14px 40px rgba(0,0,0,0.5); display:none; }
+.music-list-panel.show { display:block; }
+.music-item { padding:6px 8px;border-radius:6px;cursor:pointer;font-weight:600 }
+.music-item:hover { background:rgba(255,255,255,0.03) }
+.music-loop { margin-left:auto;width:32px;height:32px;border-radius:6px;border:1px solid rgba(255,255,255,0.06);display:grid;place-items:center;cursor:pointer }
+@media (max-width:520px) { .music-widget{width:180px} }
