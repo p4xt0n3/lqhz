@@ -23,7 +23,17 @@
 <body>
   <!-- ...existing content... -->
   <main class="cover">
-    <img src="lqhz.jpeg" alt="猎奇回战官网封面" class="cover-image">
+    <!-- Carousel cover: three slides (will roll automatically and via buttons) -->
+    <div id="coverCarousel" class="carousel" aria-roledescription="carousel" aria-label="封面轮播">
+      <div class="carousel-track" id="carouselTrack" style="transform:translateX(0%)">
+        <div class="carousel-slide"><img src="lqhz.jpeg" alt="封面 1"></div>
+        <div class="carousel-slide"><img src="lqhzs2.jpeg" alt="封面 2"></div>
+        <div class="carousel-slide"><img src="qtsy.jpeg" alt="封面 3"></div>
+      </div>
+      <button class="carousel-btn left" id="carouselPrev" aria-label="上一封面">‹</button>
+      <button class="carousel-btn right" id="carouselNext" aria-label="下一封面">›</button>
+    </div>
+
     <!-- Content area where comics render -->
     <section id="reader" aria-live="polite">
       <!-- 初始为空，选择目录后加载 -->

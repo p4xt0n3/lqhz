@@ -15,21 +15,60 @@ body {
   font-family: 'Noto Sans', system-ui, -apple-system, Segoe UI, Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 }
 
-/* Cover */
-.cover {
+/* Carousel cover */
+.carousel {
   position: relative;
-  min-height: 100vh;
-  overflow: hidden;
-}
-.cover-image {
-  display: block;
-  max-width: 800px;
-  width: 90%;
+  width: min(800px, 90%);
   max-height: 70vh;
   height: auto;
   margin: 18px auto;
+  overflow: hidden;
+  border-radius: 8px;
   background: #000;
-  object-fit: contain;
+}
+.carousel-track {
+  display: flex;
+  width: 300%;
+  transition: transform 420ms cubic-bezier(.2,.9,.2,1);
+  will-change: transform;
+}
+.carousel-slide {
+  flex: 0 0 100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: #000;
+}
+.carousel-slide img {
+  width: 100%;
+  height: auto;
+  display:block;
+  object-fit:contain;
+}
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.92);
+  color: var(--fg);
+  font-size: 22px;
+  line-height: 1;
+  display:grid;
+  place-items:center;
+  cursor: pointer;
+  z-index: 40;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+.carousel-btn.left { left: 8px; }
+.carousel-btn.right { right: 8px; }
+.carousel-btn:active { transform: translateY(-50%) scale(0.98); }
+@media (max-width:520px) {
+  .carousel { width: 94%; margin: 12px auto; }
+  .carousel-btn { width:40px;height:40px;font-size:20px; }
 }
 
 /* Reader */

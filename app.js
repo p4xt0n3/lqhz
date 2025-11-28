@@ -472,3 +472,63 @@ partDownloadModal.addEventListener('click', (e) => {
   if (e.target.matches('[data-close], .modal-backdrop')) closePartDownload();
 });
 partDownloadCancel.addEventListener('click', closePartDownload);
+
+/* Carousel for cover: auto-roll and controls */
+(function initCoverCarousel() {
+  const imgs = ['lqhz.jpeg', 'lqhzs2.jpeg', 'qtsy.jpeg'];
+  const track = document.getElementById('carouselTrack');
+  const prev = document.getElementById('carouselPrev');
+  const next = document.getElementById('carouselNext');
+  if (!track || !prev || !next) return;
+
+  let idx = 0;
+  let timer = null;
+  const count = imgs.length;
+
+  function setPosition(i, animate = true) {
+    if (!animate) {
+      track.style.transition = 'none';
+      requestAnimationFrame(() => {
+        track.style.transform = `translateX(${ - (i * 100) }%)`;
+        // restore
+        requestAnimationFrame(() => { track.style.transition = ''; });
+      });
+    } else {
+      track.style.transform = `translateX(${ - (i * 100) }%)`;
+    }
+  }
+
+  function goTo(i, animate = true) {
+    idx = ((i % count) + count) % count;
+    setPosition(idx, animate);
+  }
+  function nextSlide() { goTo(idx + 1, true); resetTimer(); }
+  function prevSlide() { goTo(idx - 1, true); resetTimer(); }
+
+  prev.addEventListener('click', (e) => { e.stopPropagation(); prevSlide(); });
+  next.addEventListener('click', (e) => { e.stopPropagation(); nextSlide(); });
+
+  function resetTimer() {
+    if (timer) clearInterval(timer);
+    timer = setInterval(() => { goTo(idx + 1, true); }, 3000);
+  }
+
+  // keyboard support: left/right arrows move carousel when not typing
+  window.addEventListener('keydown', (e) => {
+    const tag = (e.target && e.target.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target && e.target.isContentEditable)) return;
+    if (e.key === 'ArrowLeft') { prevSlide(); }
+    else if (e.key === 'ArrowRight') { nextSlide(); }
+  });
+
+  // initialize
+  goTo(0, false);
+  resetTimer();
+
+  // pause auto-advance on pointerenter, resume on leave
+  const container = document.getElementById('coverCarousel');
+  if (container) {
+    container.addEventListener('pointerenter', () => { if (timer) clearInterval(timer); });
+    container.addEventListener('pointerleave', () => { resetTimer(); });
+  }
+})();
