@@ -18,8 +18,9 @@ body {
 /* Carousel cover */
 .carousel {
   position: relative;
-  width: min(800px, 90%);
-  max-height: 70vh;
+  width: min(640px, 92%); /* reduced max width for better balance */
+  max-width: 92vw;
+  max-height: 48vh; /* limit height so it doesn't dominate the viewport */
   height: auto;
   margin: 18px auto;
   overflow: hidden;
@@ -40,7 +41,9 @@ body {
   background: #000;
 }
 .carousel-slide img {
-  width: 100%;
+  max-width: 100%;
+  max-height: 44vh; /* slightly smaller than container to keep padding */
+  width: auto;
   height: auto;
   display:block;
   object-fit:contain;
